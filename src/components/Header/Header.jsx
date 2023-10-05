@@ -20,10 +20,10 @@ const navigate = useNavigate()
                 <div className='listing'>
                   <ul>
                     <li><Link  to='/' >Home</Link></li>
-                    <li><a href=''   onClick={()=>{navigateHandle("movie")}}  >Movies</a></li>
+                    <li><p    onClick={()=>{navigateHandle("movie")}}  >Movies</p></li>
                     <li><a  className='logoHighlight' >SRK+ OTT APP</a></li>
-                    <li><a href=''    onClick={()=>{navigateHandle("tv")}} >TV Shows</a></li>
-                    <li><a href='' >Favourites</a></li>
+                    <li><p     onClick={()=>{navigateHandle("tv")}} >TV Shows</p></li>
+                    <li><Link to='' >Favourites</Link></li>
                   </ul>
                 </div>
               </div>
