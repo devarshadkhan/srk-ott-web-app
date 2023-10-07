@@ -6,6 +6,7 @@
   object-fit: cover;
   object-position: center;
   flex-shrink: 0;
+  border-radius: 7px;
 }
 body{
   /* background: rgba(0, 0, 0, 0.85); */

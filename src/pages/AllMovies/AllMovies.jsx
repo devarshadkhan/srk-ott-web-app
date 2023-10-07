@@ -1,3 +1,288 @@
+
+// import React, { useEffect, useState } from "react";
+// import axiosInstance from "../../utils/axios";
+// import { API } from "../../utils/apiEndpoint";
+// import { Link, useParams } from "react-router-dom";
+// import InfiniteScroll from "react-infinite-scroll-component";
+// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+// import "react-circular-progressbar/dist/styles.css";
+// import { formatDateToMonthNameDayYear } from "../../utils/hooks";
+// import Loader from "../../components/loader/Loader";
+// import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+// import 'react-loading-skeleton/dist/skeleton.css';
+
+// const AllMovies = () => {
+//   const { mediaType } = useParams();
+//   const [allMovie, setAllMovie] = useState([]);
+//   const [hasMore, setHasMore] = useState(true);
+//   const [page, setPage] = useState(1);
+//   const [loading, setLoading] = useState(true);
+//   const [showResultsNotFound, setShowResultsNotFound] = useState(false);
+
+//   const trendingMovie = async () => {
+//     try {
+//       setLoading(true);
+//       const response = await axiosInstance.get(
+//         `${API.allDiscoverMovie}/${mediaType}?page=${page}`
+//       );
+//       const newMovies = response.data.results;
+
+//       if (newMovies.length === 0) {
+//         setShowResultsNotFound(true);
+//       } else {
+//         setShowResultsNotFound(false);
+//         setAllMovie((prevMovies) => [...prevMovies, ...newMovies]);
+//         setPage(page + 1);
+
+//         if (page >= response.data.total_pages) {
+//           setHasMore(false);
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Error fetching movies:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     trendingMovie();
+//   }, [mediaType]); 
+
+//   return (
+//     <div>
+//       <section className="movieCard">
+//         <div className="container">
+//           <h4 className="mb-4">{mediaType}</h4>
+//           {loading ? (
+//             <div className="sketlon">
+//               {(loading ? Array.from(new Array(12)) : allMovie).map((id, index) => (
+//                 <div key={index} className="bodysketlon">
+//                   <SkeletonTheme baseColor="#202020" highlightColor="#444">
+//                     <Skeleton variant="rectangular" width={310} height={120} />
+//                     <Skeleton width="40%" />
+//                   </SkeletonTheme>
+//                 </div>
+//               ))}
+//             </div>
+//           ) : allMovie.length > 0 ? (
+//             <InfiniteScroll
+//               dataLength={allMovie.length}
+//               next={trendingMovie}
+//               hasMore={hasMore}
+//               className="infinite"
+//               loader={<Loader />}
+//             >
+//               <div className="row">
+//                 {allMovie.map((e) => (
+//                   <div key={e.id} className="col-12 col-md-2">
+//                     <Link to={`/${e.media_type || mediaType}/${e.id}`}>
+//                       <img
+//                         src={
+//                           e.poster_path
+//                             ? `https://image.tmdb.org/t/p/w500${e.poster_path}`
+//                             : "https://movix-eta.vercel.app/assets/no-poster-af8294eb.png"
+//                         }
+//                         alt={e.title}
+//                       />
+//                       <div className="mainRD">
+//                         <div>
+//                           <p>
+//                             {e?.title || e?.name
+//                               ? `${(e?.title || e?.name)?.substring(0, 10)}...`
+//                               : "Title Not Available"}
+//                           </p>
+//                           <p>
+//                             {" "}
+//                             <span>
+//                               {formatDateToMonthNameDayYear(
+//                                 e.release_date || e?.first_air_date
+//                               )}
+//                             </span>{" "}
+//                           </p>
+//                         </div>
+//                         <div className="circleRating">
+//                           <CircularProgressbar
+//                             value={e.vote_average.toFixed(2)}
+//                             maxValue={10}
+//                             text={e.vote_average.toFixed(1)}
+//                             styles={buildStyles({
+//                               pathColor:
+//                                 e.vote_average < 5
+//                                   ? "red"
+//                                   : e.vote_average < 7
+//                                   ? "orange"
+//                                   : "green",
+//                             })}
+//                           />
+//                         </div>
+//                       </div>
+//                     </Link>
+//                   </div>
+//                 ))}
+//               </div>
+//             </InfiniteScroll>
+//           ) : (
+//             showResultsNotFound && (
+//               <span className="resultNotFound">Sorry, Results not found!</span>
+//             )
+//           )}
+//         </div>
+//       </section>
+//     </div>
+//   );
+// };
+
+// export default AllMovies;
+
+
+
+
+
+
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../utils/axios";
+import { API } from "../../utils/apiEndpoint";
+import { Link, useParams } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { formatDateToMonthNameDayYear } from "../../utils/hooks";
+import Loader from "../../components/loader/Loader";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
+const AllMovies = () => {
+  const { mediaType } = useParams();
+  const [allMovie, setAllMovie] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [showResultsNotFound, setShowResultsNotFound] = useState(false);
+
+  const trendingMovie = async () => {
+    try {
+      setLoading(true); // Set loading to true before making the API call
+      const response = await axiosInstance.get(
+        `${API.allDiscoverMovie}/${mediaType}?page=${page}`
+      );
+      const newMovies = response.data.results;
+
+      if (newMovies.length === 0) {
+        setShowResultsNotFound(true);
+      } else {
+        setShowResultsNotFound(false);
+        setAllMovie((prevMovies) => [...prevMovies, ...newMovies]);
+        setPage(page + 1);
+
+        if (page >= response.data.total_pages) {
+          setHasMore(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    trendingMovie();
+  }, [mediaType]);
+
+  return (
+    <div>
+      <section className="movieCard">
+        <div className="container">
+          <h4 className="mb-4">{mediaType}</h4>
+          {loading ? (
+            <div className="sketlon">
+              {(loading ? Array.from(new Array(12)) : allMovie).map((id, index) => (
+                <div key={index} className="bodysketlon">
+                  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                    <Skeleton variant="rectangular" width={310} height={120} />
+                    <Skeleton width="40%" />
+                  </SkeletonTheme>
+                </div>
+              ))}
+            </div>
+          ) : allMovie.length > 0 ? (
+            <InfiniteScroll
+              dataLength={allMovie.length}
+              next={trendingMovie}
+              hasMore={hasMore}
+              className="infinite"
+              loader={<Loader />}
+            >
+              <div className="row">
+                {allMovie.map((e) => (
+                  <div key={e.id} className="col-12 col-md-2">
+                    <Link to={`/${e.media_type || mediaType}/${e.id}`}>
+                      <img
+                        src={
+                          e.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${e.poster_path}`
+                            : "https://movix-eta.vercel.app/assets/no-poster-af8294eb.png"
+                        }
+                        alt={e.title}
+                      />
+                      <div className="mainRD">
+                        <div>
+                          <p>
+                            {e?.title || e?.name
+                              ? `${(e?.title || e?.name)?.substring(0, 10)}...`
+                              : "Title Not Available"}
+                          </p>
+                          <p>
+                            {" "}
+                            <span>
+                              {formatDateToMonthNameDayYear(
+                                e.release_date || e?.first_air_date
+                              )}
+                            </span>{" "}
+                          </p>
+                        </div>
+                        <div className="circleRating">
+                          <CircularProgressbar
+                            value={e.vote_average.toFixed(2)}
+                            maxValue={10}
+                            text={e.vote_average.toFixed(1)}
+                            styles={buildStyles({
+                              pathColor:
+                                e.vote_average < 5
+                                  ? "red"
+                                  : e.vote_average < 7
+                                  ? "orange"
+                                  : "green",
+                            })}
+                          />
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </InfiniteScroll>
+          ) : (
+            showResultsNotFound && (
+              <span className="resultNotFound">Sorry, Results not found!</span>
+            )
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default AllMovies;
+
+
+
+
+
+
+
+
 // import React, { useEffect, useState } from "react";
 // // import MovieCard from "../../components/MovieCard/MovieCard";
 // import axiosInstance from "../../utils/axios";
@@ -371,138 +656,138 @@
 
 
 
+/**OLD Code */
 
 
 
 
+// import React, { useEffect, useState } from "react";
+// import axiosInstance from "../../utils/axios";
+// import { API } from "../../utils/apiEndpoint";
+// import "../../components/MovieCard/MovieCard.css";
+// import { Link, useParams } from "react-router-dom";
+// import InfiniteScroll from "react-infinite-scroll-component";
+// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+// import "react-circular-progressbar/dist/styles.css";
+// import { formatDateToMonthNameDayYear } from "../../utils/hooks";
+// import Loader from "../../components/loader/Loader";
 
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../../utils/axios";
-import { API } from "../../utils/apiEndpoint";
-import "../../components/MovieCard/MovieCard.css";
-import { Link, useParams } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import { formatDateToMonthNameDayYear } from "../../utils/hooks";
-import Loader from "../../components/loader/Loader";
+// const AllMovies = () => {
+//   const { mediaType } = useParams();
+//   const [allMovie, setAllmovie] = useState([]);
+//   const [hasMore, setHasMore] = useState(true);
+//   const [loading, setLoading] = useState(false); // Initialize loading as false
 
-const AllMovies = () => {
-  const { mediaType } = useParams();
-  const [allMovie, setAllmovie] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false); // Initialize loading as false
+//   const trendingMovie = async () => {
+//     try {
+//       setLoading(true); // Set loading to true when fetching data
 
-  const trendingMovie = async () => {
-    try {
-      setLoading(true); // Set loading to true when fetching data
+//       const response = await axiosInstance.get(
+//         `${API.allDiscoverMovie}/${mediaType}?page=${allMovie.length / 20 + 1}` // Calculate the next page based on the length of allMovie
+//       );
 
-      const response = await axiosInstance.get(
-        `${API.allDiscoverMovie}/${mediaType}?page=${allMovie.length / 20 + 1}` // Calculate the next page based on the length of allMovie
-      );
+//       const newMovies = response.data.results;
+//       setAllmovie((prevMovies) => [...prevMovies, ...newMovies]);
 
-      const newMovies = response.data.results;
-      setAllmovie((prevMovies) => [...prevMovies, ...newMovies]);
+//       if (allMovie.length >= response.data.total_results) {
+//         setHasMore(false);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching movies:", error);
+//     } finally {
+//       setLoading(false); // Set loading back to false when data fetching is complete
+//     }
+//   };
 
-      if (allMovie.length >= response.data.total_results) {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-    } finally {
-      setLoading(false); // Set loading back to false when data fetching is complete
-    }
-  };
+//   useEffect(() => {
+//     // Reset the state when the mediaType parameter changes
+//     setAllmovie([]);
+//     setHasMore(true);
 
-  useEffect(() => {
-    // Reset the state when the mediaType parameter changes
-    setAllmovie([]);
-    setHasMore(true);
+//     // Fetch data for the new mediaType
+//     trendingMovie();
+//   }, [mediaType]);
 
-    // Fetch data for the new mediaType
-    trendingMovie();
-  }, [mediaType]);
+//   return (
+//     <div>
+//       <div>
+//         <section className="movieCard">
+//           <div className="container">
+//             <h4>{mediaType}</h4>
+//             {/* {loading && <Loader />} */}
+//             {/* {!loading && ( */}
+//               <>
+//                 {allMovie.length > 0 ? (
+//                   <InfiniteScroll
+//                     dataLength={allMovie.length}
+//                     next={trendingMovie}
+//                     hasMore={hasMore}
+//                     className="infinite"
+//                     loader={<Loader />}
+//                   >
+//                     <div className="row">
+//                       {allMovie.map((e) => (
+//                         <div key={e.id} className="col-12 col-md-2">
+//                           <Link to={`/${e.media_type || mediaType}/${e.id}`}>
+//                             <img
+//                               src={
+//                                 e.poster_path
+//                                   ? `https://image.tmdb.org/t/p/w500${e.poster_path}`
+//                                   : "https://movix-eta.vercel.app/assets/no-poster-af8294eb.png"
+//                               }
+//                               alt={e.title}
+//                             />
+//                             <div className="mainRD">
+//                               <div>
+//                                 <p>
+//                                   {e?.title || e?.name
+//                                     ? `${(e?.title || e?.name)?.substring(0, 10)}...`
+//                                     : "Title Not Available"}
+//                                 </p>
 
-  return (
-    <div>
-      <div>
-        <section className="movieCard">
-          <div className="container">
-            <h4>{mediaType}</h4>
-            {/* {loading && <Loader />} */}
-            {/* {!loading && ( */}
-              <>
-                {allMovie.length > 0 ? (
-                  <InfiniteScroll
-                    dataLength={allMovie.length}
-                    next={trendingMovie}
-                    hasMore={hasMore}
-                    className="infinite"
-                    loader={<Loader />}
-                  >
-                    <div className="row">
-                      {allMovie.map((e) => (
-                        <div key={e.id} className="col-12 col-md-2">
-                          <Link to={`/${e.media_type || mediaType}/${e.id}`}>
-                            <img
-                              src={
-                                e.poster_path
-                                  ? `https://image.tmdb.org/t/p/w500${e.poster_path}`
-                                  : "https://movix-eta.vercel.app/assets/no-poster-af8294eb.png"
-                              }
-                              alt={e.title}
-                            />
-                            <div className="mainRD">
-                              <div>
-                                <p>
-                                  {e?.title || e?.name
-                                    ? `${(e?.title || e?.name)?.substring(0, 10)}...`
-                                    : "Title Not Available"}
-                                </p>
+//                                 <p>
+//                                   {" "}
+//                                   <span>
+//                                     {formatDateToMonthNameDayYear(
+//                                       e.release_date || e?.first_air_date
+//                                     )}
+//                                   </span>{" "}
+//                                 </p>
+//                               </div>
 
-                                <p>
-                                  {" "}
-                                  <span>
-                                    {formatDateToMonthNameDayYear(
-                                      e.release_date || e?.first_air_date
-                                    )}
-                                  </span>{" "}
-                                </p>
-                              </div>
+//                               <div className="circleRating">
+//                                 <CircularProgressbar
+//                                   value={e.vote_average.toFixed(2)}
+//                                   maxValue={10}
+//                                   text={e.vote_average.toFixed(1)}
+//                                   styles={buildStyles({
+//                                     pathColor:
+//                                       e.vote_average < 5
+//                                         ? "red"
+//                                         : e.vote_average < 7
+//                                         ? "orange"
+//                                         : "green",
+//                                   })}
+//                                 />
+//                               </div>
+//                             </div>
+//                           </Link>
+//                         </div>
+//                       ))}
+//                     </div>
+//                   </InfiniteScroll>
+//                 ) : (
+//                   <span className="resultNotFound">
+//                     Sorry, Results not found!
+//                   </span>
+//                 )}
+//               </>
+//             {/* )} */}
+//           </div>
+//         </section>
+//       </div>
+//     </div>
+//   );
+// };
 
-                              <div className="circleRating">
-                                <CircularProgressbar
-                                  value={e.vote_average.toFixed(2)}
-                                  maxValue={10}
-                                  text={e.vote_average.toFixed(1)}
-                                  styles={buildStyles({
-                                    pathColor:
-                                      e.vote_average < 5
-                                        ? "red"
-                                        : e.vote_average < 7
-                                        ? "orange"
-                                        : "green",
-                                  })}
-                                />
-                              </div>
-                            </div>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </InfiniteScroll>
-                ) : (
-                  <span className="resultNotFound">
-                    Sorry, Results not found!
-                  </span>
-                )}
-              </>
-            {/* )} */}
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-};
-
-export default AllMovies;
+// export default AllMovies;
